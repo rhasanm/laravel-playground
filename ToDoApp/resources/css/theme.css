@@ -1,0 +1,21 @@
+/* Default light mode styles */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    /* Add more variables here */
+}
+
+/* Dark mode styles */
+body[data-theme="dark"] {
+    --bg-color: #333333;
+    --text-color: #ffffff;
+    /* Adjust other variables for dark mode */
+}
+
+/* Shared styles for both modes */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Other styles specific to your app */
