@@ -11,7 +11,7 @@ class FullCalendar extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public string $domId)
+    public function __construct(public string $domId, public string $eventDetailsListId, public string $eventModalId)
     {
         //
     }

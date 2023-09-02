@@ -4,7 +4,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.8/index.global.min.js"></script>
-<script src="https://static.cloudflareinsights.com/beacon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		var calendarEl = document.getElementById('calendar');
@@ -15,7 +15,7 @@
 			headerToolbar: {
 				left: 'prev,next today',
 				center: 'title',
-				right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+				right: 'multiMonthYear,dayGridMonth,timeGridWeek,timeGridDay,listMonth'
 			},
 			weekNumbers: true,
 			dayMaxEvents: true,
@@ -36,14 +36,60 @@
 			// alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
 			// alert('View: ' + info.view.type);
 			// info.el.style.borderColor = 'red';
+			$(function() {
+				$.get(`/api/master-schedules/${info.event.id}`, {}, function(data) {
+					let eventDetailsHtml = [];
+					const excludedFields = ['id', 'created_at', 'updated_at', 'home_team_id', 'away_team_id'];
+					for (let key in data) {
+							if (data.hasOwnProperty(key) && !excludedFields.includes(key)) {
+									if (key === 'home_team' || key === 'away_team') {
+											eventDetailsHtml.push(`<li><strong>${key}:</strong> ${data[key].name}</li>`);
+									} else {
+											eventDetailsHtml.push(`<li><strong>${key}:</strong> ${data[key]}</li>`);
+									}
+							}
+					}
+					$({{ $eventDetailsListId }}).html(eventDetailsHtml.join(''));
+
+					$({{ $eventModalId }}).modal('show');
+				});
+			});
 		});
 
 		calendar.on('eventDrop', function(info) {
-			alert(info.event.title + " was dropped on " + info.event.start.toISOString());
-
 			if (!confirm("Are you sure about this change?")) {
 				info.revert();
+				return;
 			}
+			console.log(info.event);
+			$(function() {
+				const startDate = new Date(info.event.start);
+				startDate.setHours(startDate.getHours() - 6);
+
+				const formattedDate = startDate.toISOString().split('T')[0];
+				const formattedTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}:${startDate.getSeconds().toString().padStart(2, '0')}`;
+
+				const requestData = {
+						date: formattedDate,
+						time: formattedTime,
+				};
+
+				console.log(requestData);
+
+				$.ajax({
+					url: `/api/master-schedules/${info.event.id}`,
+					type: 'PUT',
+					dataType: 'json',
+					data: requestData,
+					success: function(data) {
+						console.log(data);
+						calendar.refetchEvents();
+					},
+					error: function(error) {
+							console.error(error);
+					}
+				});
+			});
 		});
 
 		calendar.render();

@@ -26,7 +26,7 @@ class MasterScheduleController extends Controller
 
     public function show($id)
     {
-        $masterSchedule = MasterSchedule::findOrFail($id);
+				$masterSchedule = MasterSchedule::with(['homeTeam', 'awayTeam'])->findOrFail($id);
         return response()->json($masterSchedule);
     }
 
@@ -49,11 +49,11 @@ class MasterScheduleController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->validate([
-            'title' => 'required|string',
-            'home_team_id' => 'required|exists:teams,id',
-            'away_team_id' => 'required|exists:teams,id',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i:s',
+            'title' => 'string',
+            'home_team_id' => 'exists:teams,id',
+            'away_team_id' => 'exists:teams,id',
+            'date' => 'date',
+            'time' => 'date_format:H:i:s',
             'location' => 'nullable|string',
             'sub_location' => 'nullable|string',
         ]);
