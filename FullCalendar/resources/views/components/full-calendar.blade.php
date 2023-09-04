@@ -5,12 +5,13 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		var calendarEl = document.getElementById('calendar');
 
 		var calendar = new FullCalendar.Calendar(calendarEl, {
-			timeZone: 'Asia/Dhaka',
+			// timeZone: 'Asia/Dhaka',
 			themeSystem: 'bootstrap5',
 			headerToolbar: {
 				left: 'prev,next today',
@@ -61,13 +62,19 @@
 				info.revert();
 				return;
 			}
-			console.log(info.event);
 			$(function() {
-				const startDate = new Date(info.event.start);
-				startDate.setHours(startDate.getHours() - 6);
+				console.log(info.event.start);
+				// const startDate = moment.tz(info.event.start, 'Asia/Dhaka');
+				const startDate = moment(info.event.start);
+				const formattedDate = startDate.format('YYYY-MM-DD');
+				const formattedTime = startDate.format('HH:mm:ss');
 
-				const formattedDate = startDate.toISOString().split('T')[0];
-				const formattedTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}:${startDate.getSeconds().toString().padStart(2, '0')}`;
+
+				// const startDate = new Date(info.event.start);
+				// startDate.setHours(startDate.getHours() - 6);
+
+				// const formattedDate = startDate.toISOString().split('T')[0];
+				// const formattedTime = `${startDate.getHours().toString().padStart(2, '0')}:${startDate.getMinutes().toString().padStart(2, '0')}:${startDate.getSeconds().toString().padStart(2, '0')}`;
 
 				const requestData = {
 						date: formattedDate,
